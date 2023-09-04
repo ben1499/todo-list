@@ -1,1 +1,4 @@
-console.log("Hello");
+import displayController from "./displayController.js";
+
+
+displayController();
