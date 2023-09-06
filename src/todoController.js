@@ -1,6 +1,7 @@
 
 
 const todoListArray = [];
+const projects = ['Inbox'];
 
 const createTodo = (title, description, dueDate, priority) => {
     const todoItems = [];
@@ -24,4 +25,11 @@ const removeItem = (index) => {
 
 const getItems = () => todoListArray;
 
-export { createTodo, addItem, getItems }
+const addProject = (item) => {
+    projects.push(item);
+    console.log(projects);
+}
+
+const getProjects = () => projects;
+
+export { createTodo, addItem, getItems, addProject, getProjects }

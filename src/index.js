@@ -1,4 +1,8 @@
-import displayController from "./displayController.js";
+import sidebar from "./sidebar"
+import dashboard from "./dashboard.js";
 
 
-displayController();
+const content = document.getElementById('content');
+
+sidebar();
+dashboard();

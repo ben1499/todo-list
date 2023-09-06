@@ -1,7 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#content {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+}
+
+.project-dialog {
+    display: none;
+}
+
 .create-form {
     display: none;
 }
 
 .visible {
     display: block;
+}
+
+ul li {
+    list-style-type: none;
 }

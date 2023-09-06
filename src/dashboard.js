@@ -1,14 +1,17 @@
 import { createTodo, addItem, getItems } from './todoController';
 import './style.css';
 
-export default function displayController() {
+export default function dashboard() {
     const content = document.querySelector('#content');
+    const main = document.createElement('main');
     const todoContainer = document.createElement('div');
     const todoListContainer = document.createElement('div');
     const todoList = document.createElement('ul');
     const createForm = document.createElement('div');
     const titleInput = document.createElement('input');
     const descInput = document.createElement('input');
+    const dateInput = document.createElement('input');
+    const selectDropdown = document.createElement('select');
     const submitButton = document.createElement('button');
     const addButton = document.createElement('button');
 
@@ -19,16 +22,20 @@ export default function displayController() {
 
     titleInput.placeholder = 'Title';
     descInput.placeholder = 'Description';
+    dateInput.setAttribute('type', 'date');
     submitButton.textContent = 'Add task';
 
     createForm.classList.add('create-form');
     
-    createForm.append(titleInput, descInput, submitButton);
+    createForm.append(titleInput, descInput, dateInput, submitButton);
 
     todoListContainer.append(todoList);
 
     todoContainer.append(addButton, createForm, todoListContainer);
-    content.append(todoContainer);
+    main.append(todoContainer);
+
+    content.append(main);
+
 
     addButton.addEventListener('click', () => {
         // const result = createTodo('Do Something', 'Description of the stuff')
@@ -37,7 +44,7 @@ export default function displayController() {
     })
 
     submitButton.addEventListener('click', () => {
-        const result = createTodo(titleInput.value, descInput.value)
+        const result = createTodo(titleInput.value, descInput.value, dateInput.value);
         titleInput.value = '';
         descInput.value = '';
         console.log(result);
