@@ -1,9 +1,9 @@
-import { createTodo, addItem, getItems } from './todoController';
+import { createTodo, addItem, deleteTodo, getItems, toggleComplete, getTodaysItems } from './todoController';
 import './style.css';
 
-export default function dashboard() {
+export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
     const content = document.querySelector('#content');
-    const main = document.createElement('main');
+    const main = document.querySelector('main');
     const todoContainer = document.createElement('div');
     const todoListContainer = document.createElement('div');
     const todoList = document.createElement('ul');
@@ -11,10 +11,25 @@ export default function dashboard() {
     const titleInput = document.createElement('input');
     const descInput = document.createElement('input');
     const dateInput = document.createElement('input');
-    const selectDropdown = document.createElement('select');
+    const priorityDropdown = document.createElement('select');
+    const noneOption = document.createElement('option');
+    const highOption = document.createElement('option');
+    const medOption = document.createElement('option');
+    const lowOption = document.createElement('option');
     const submitButton = document.createElement('button');
     const addButton = document.createElement('button');
 
+
+    noneOption.textContent = 'None';
+    highOption.append('High');
+    medOption.textContent = 'Medium';
+    lowOption.textContent = 'Low';
+
+    highOption.style.color = 'red';
+    medOption.style.color = 'green';
+    lowOption.style.color = 'blue';
+
+    priorityDropdown.append(noneOption, highOption, medOption, lowOption);
     
     todoContainer.classList.add('todo-container')
     addButton.textContent = '+';
@@ -27,11 +42,15 @@ export default function dashboard() {
 
     createForm.classList.add('create-form');
     
-    createForm.append(titleInput, descInput, dateInput, submitButton);
+    createForm.append(titleInput, descInput, dateInput, priorityDropdown, submitButton);
 
     todoListContainer.append(todoList);
 
-    todoContainer.append(addButton, createForm, todoListContainer);
+    if (isCreate) {
+        todoContainer.append(addButton)
+    }
+
+    todoContainer.append(createForm, todoListContainer);
     main.append(todoContainer);
 
     content.append(main);
@@ -40,25 +59,83 @@ export default function dashboard() {
     addButton.addEventListener('click', () => {
         // const result = createTodo('Do Something', 'Description of the stuff')
         // console.log(result);
-        createForm.classList.toggle('visible')
+        createForm.classList.toggle('form-visible')
     })
 
     submitButton.addEventListener('click', () => {
-        const result = createTodo(titleInput.value, descInput.value, dateInput.value);
+        const result = createTodo(titleInput.value, descInput.value, dateInput.value, selectedProject, priorityDropdown.value);
         titleInput.value = '';
         descInput.value = '';
         console.log(result);
         addItem(result);
-        createForm.classList.remove('visible')
+        createForm.classList.remove('form-visible')
         renderTodos();
     })
 
+
+    //to display items when dashboard() is called
+    renderTodos();
+
     function renderTodos() {
         todoList.textContent = '';
-        const items = getItems();
-        items.forEach((item) => {
+        console.log("Here" + selectedProject);
+        let items;
+        if (isCreate) {
+            items = getItems(selectedProject);
+        } else {
+            items = getTodaysItems();
+        }
+        console.log("Items");
+        console.log(items);
+        items.forEach((item, index) => {
             const listItem = document.createElement('li');
-            listItem.textContent = item.title;
+            const checkBox = document.createElement('input');
+            const todoContent = document.createElement('div');
+            const todoTitle = document.createElement('p');
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('material-icons');
+            deleteButton.textContent = 'delete';
+            deleteButton.setAttribute('data-id', index)
+
+            todoTitle.textContent = item.title;
+
+            listItem.classList.add('todo-item');
+            checkBox.setAttribute('type', 'checkbox')
+            checkBox.setAttribute('data-id', index);
+
+            todoContent.append(todoTitle);
+            
+            if(item.isComplete) {
+                todoContent.classList.add('complete');
+                checkBox.checked = true;
+            }
+
+            if(item.priority === 'High') {
+                checkBox.classList.add('high');
+            } else if (item.priority === 'Medium') {
+                checkBox.classList.add('medium');
+            } else if (item.priority === 'Low') {
+                checkBox.classList.add('low');
+            } else {
+                checkBox.style.border = '1px solid grey'
+            }
+
+            checkBox.addEventListener('change', function() {
+                // toggleComplete(+this.dataset.id);
+                toggleComplete(item.id);
+                if(this.checked) {
+                    todoContent.classList.add('complete');
+                } else {
+                    todoContent.classList.remove('complete');
+                }
+            })
+
+            deleteButton.addEventListener('click', function() {
+                deleteTodo(+this.dataset.id);
+                renderTodos();
+            })
+
+            listItem.append(checkBox, todoContent, deleteButton);
             todoList.append(listItem);
         })
     }

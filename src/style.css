@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+body {
+    font-family: sans-serif;
+}
+
 #content {
     display: flex;
 }
@@ -19,6 +23,25 @@
     display: none;
 }
 
+.form-visible {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 20px;
+    width: 500px;
+}
+
+.form-visible > input:first-child,  
+.form-visible > input:nth-child(2){
+    border: none;
+}
+
+.form-visible > input:first-child:focus-visible,  
+.form-visible > input:nth-child(2):focus-visible {
+    outline: none;
+}
+
 .visible {
     display: block;
 }
@@ -26,3 +49,84 @@
 ul li {
     list-style-type: none;
 }
+
+.todo-item {
+    display: flex;
+    gap: 10px;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    width: 1em;
+    height: 1em;
+    /* border: 1px solid gray; */
+    border-radius: 50%;
+    /* Adjusts the position of the checkboxes on the text baseline */
+    vertical-align: -2px;
+    /* Set here so that Windows' High-Contrast Mode can override */
+    color: green;
+  }
+  
+  input[type="checkbox"]::before {
+    content: "✔";
+    color: red;
+    position: absolute;
+    font-size: 1.2em;
+    right: -1px;
+    top: -0.3em;
+    visibility: hidden;
+  }
+  
+  input[type="checkbox"]:checked::before {
+    /* Use `visibility` instead of `display` to avoid recalculating layout */
+    visibility: visible;
+  }
+
+.complete {
+    text-decoration: line-through;
+}
+
+.high {
+    border: 2px solid red;
+}
+
+.medium {
+    border: 2px solid green;
+}
+
+.low {
+    border: 2px solid blue;
+}
+
+nav {
+    padding: 20px;
+    background-color: #f0f9ff;
+}
+
+
+
+nav > ul:first-child {
+    margin-bottom: 20px;
+}
+
+.list-title {
+    border-bottom: 2px solid black;
+    margin-bottom: 5px;
+}
+
+nav > ul li {
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav > ul li:hover {
+    background-color: #7dd3fc;
+}
+
