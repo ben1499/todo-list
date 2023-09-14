@@ -1,16 +1,23 @@
 import { createTodo, addItem, deleteTodo, getItems, toggleComplete, getTodaysItems } from './todoController';
+import format from 'date-fns/format';
+import parseISO from 'date-fns/parseISO';
 import './style.css';
 
-export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
+export default function dashboard(selectedProject = 'Inbox', isCreate = true, pageTitle = 'Inbox') {
     const content = document.querySelector('#content');
     const main = document.querySelector('main');
+    const overlayContainer = document.createElement('div');
     const todoContainer = document.createElement('div');
+    const tabTitle = document.createElement('h1');
     const todoListContainer = document.createElement('div');
     const todoList = document.createElement('ul');
     const createForm = document.createElement('div');
+    const cancelButton = document.createElement('button');
     const titleInput = document.createElement('input');
     const descInput = document.createElement('input');
     const dateInput = document.createElement('input');
+    const priorityContainer = document.createElement('div');
+    const priorityLabel = document.createElement('label');
     const priorityDropdown = document.createElement('select');
     const noneOption = document.createElement('option');
     const highOption = document.createElement('option');
@@ -18,7 +25,28 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
     const lowOption = document.createElement('option');
     const submitButton = document.createElement('button');
     const addButton = document.createElement('button');
+    const buttonsContainer = document.createElement('div');
+    const detailsModal = document.createElement('div');
+    const modalCloseButton = document.createElement('button');
 
+
+
+    const title = document.createElement('p');
+    const desc = document.createElement('p');
+    const date = document.createElement('p');
+    const priority = document.createElement('p');
+
+    modalCloseButton.classList.add('material-icons')
+    modalCloseButton.textContent = 'close';
+
+    modalCloseButton.classList.add('modal-close-btn');
+    detailsModal.classList.add('details-modal');
+    detailsModal.classList.add('hidden');
+    detailsModal.append(modalCloseButton, title, desc, date, priority);
+
+    overlayContainer.append(detailsModal);
+    
+    cancelButton.textContent = 'Cancel';
 
     noneOption.textContent = 'None';
     highOption.append('High');
@@ -29,11 +57,18 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
     medOption.style.color = 'green';
     lowOption.style.color = 'blue';
 
+    priorityLabel.setAttribute('for', 'select');
+
+    priorityLabel.textContent = 'Priority: '
+
+    priorityDropdown.id = 'select';
     priorityDropdown.append(noneOption, highOption, medOption, lowOption);
+
+    priorityContainer.append(priorityLabel, priorityDropdown);
     
     todoContainer.classList.add('todo-container')
-    addButton.textContent = '+';
-    addButton.classList.add('add');
+    addButton.textContent = '+ Add Task';
+    addButton.classList.add('add-btn');
 
     titleInput.placeholder = 'Title';
     descInput.placeholder = 'Description';
@@ -41,17 +76,25 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
     submitButton.textContent = 'Add task';
 
     createForm.classList.add('create-form');
-    
-    createForm.append(titleInput, descInput, dateInput, priorityDropdown, submitButton);
 
+    buttonsContainer.classList.add('action-buttons')
+    buttonsContainer.append(cancelButton, submitButton)
+    
+    createForm.append(titleInput, descInput, dateInput, priorityContainer, buttonsContainer);
+
+    todoListContainer.setAttribute('id', 'todo-list')
     todoListContainer.append(todoList);
+
+    tabTitle.textContent = pageTitle;
+
+    todoContainer.append(tabTitle);
 
     if (isCreate) {
         todoContainer.append(addButton)
     }
 
     todoContainer.append(createForm, todoListContainer);
-    main.append(todoContainer);
+    main.append(overlayContainer, todoContainer);
 
     content.append(main);
 
@@ -59,7 +102,22 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
     addButton.addEventListener('click', () => {
         // const result = createTodo('Do Something', 'Description of the stuff')
         // console.log(result);
-        createForm.classList.toggle('form-visible')
+        createForm.classList.add('form-visible')
+    })
+
+    cancelButton.addEventListener('click', function() {
+        createForm.classList.remove('form-visible');
+    }); 
+
+
+    submitButton.setAttribute('disabled', true);
+
+    titleInput.addEventListener('input', function() {
+        if (this.value) {
+            submitButton.removeAttribute('disabled');
+        } else {
+            submitButton.setAttribute('disabled', true);
+        }
     })
 
     submitButton.addEventListener('click', () => {
@@ -70,6 +128,15 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
         addItem(result);
         createForm.classList.remove('form-visible')
         renderTodos();
+        submitButton.setAttribute('disabled', true);
+    })
+
+    modalCloseButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        detailsModal.classList.remove('modal-visible');
+
+        overlayContainer.removeAttribute('id', 'background-blur');
+        content.style.pointerEvents = 'all';
     })
 
 
@@ -92,8 +159,18 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
             const checkBox = document.createElement('input');
             const todoContent = document.createElement('div');
             const todoTitle = document.createElement('p');
+            const dateDisplay = document.createElement('p');
             const deleteButton = document.createElement('button');
+            const rightButtons = document.createElement('div');
+            const detailsButton = document.createElement('button');
+
+            dateDisplay.classList.add('date-display');
+
+            detailsButton.classList.add('details-btn');
+            detailsButton.textContent = "Details";
+
             deleteButton.classList.add('material-icons');
+            deleteButton.classList.add('delete-btn');
             deleteButton.textContent = 'delete';
             deleteButton.setAttribute('data-id', index)
 
@@ -130,12 +207,38 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true) {
                 }
             })
 
+            detailsButton.addEventListener('click', function() {
+                title.textContent = `Title: ${item.title}`;
+                desc.textContent = `Description: ${item.description}`;
+                date.textContent = item.dueDate ? `Due Date: ${format(parseISO(item.dueDate), 'dd/MM/yyyy')}` : 'Due Date: ';
+                priority.textContent = `Priority: ${item.priority}`;
+
+                detailsModal.classList.add('modal-visible')
+
+                overlayContainer.setAttribute('id', 'background-blur');
+
+                content.style.pointerEvents = 'none';
+                detailsModal.style.pointerEvents = 'all';
+            });
+
             deleteButton.addEventListener('click', function() {
                 deleteTodo(+this.dataset.id);
                 renderTodos();
-            })
+            });
 
-            listItem.append(checkBox, todoContent, deleteButton);
+            dateDisplay.classList.add('date-display');
+
+            if (item.dueDate) {
+                dateDisplay.textContent = format(parseISO(item.dueDate), 'dd/MM/yyyy');
+            } else {
+                dateDisplay.textContent = 'No Date';
+            }
+            
+
+            rightButtons.classList.add('buttons-right');
+            rightButtons.append(detailsButton, dateDisplay, deleteButton);
+
+            listItem.append(checkBox, todoContent, rightButtons);
             todoList.append(listItem);
         })
     }

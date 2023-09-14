@@ -17,6 +17,10 @@ export default function sidebar() {
     const submitButton = document.createElement('button');
     const cancelButton = document.createElement('button');  
     const projectsList = document.createElement('ul');
+    const addBtnListItem = document.createElement('li');
+    const buttonGroup = document.createElement('div');
+
+    buttonGroup.classList.add('btn-group');
 
     inboxListItem.textContent = "Inbox";
 
@@ -28,12 +32,19 @@ export default function sidebar() {
     upperListTitle.classList.add('list-title');
     lowerListTitle.classList.add('list-title');
 
-    addButton.textContent = 'Add New Project';
+
+    addButton.classList.add('add-project-btn');
+    addButton.textContent = '+ Add Project';
+
+    addBtnListItem.append(addButton);
+
     projectInput.placeholder = 'Enter Project Name';
     submitButton.textContent = 'Add';
     cancelButton.textContent = 'Cancel';
 
-    createDialog.append(projectInput, submitButton, cancelButton);
+    buttonGroup.append(cancelButton, submitButton);
+
+    createDialog.append(projectInput, buttonGroup);
 
     createDialog.classList.add('project-dialog');
 
@@ -46,7 +57,7 @@ export default function sidebar() {
 
     todayListItem.addEventListener('click', function() {
         clearDashboard();
-        dashboard('none', false);
+        dashboard('none', false, 'Today');
     })
 
     upperList.append(upperListTitle, inboxListItem, todayListItem);
@@ -79,6 +90,7 @@ export default function sidebar() {
             const deleteButton = document.createElement('button');
             listItem.setAttribute('data-id', index);
             deleteButton.setAttribute('data-id', index);
+            deleteButton.classList.add('delete-btn');
             deleteButton.textContent = 'delete';
             deleteButton.classList.add('material-icons')
             
@@ -91,7 +103,7 @@ export default function sidebar() {
 
             listItem.addEventListener('click', function(e) {
                 clearDashboard();
-                dashboard(project);
+                dashboard(project, true, project);
 
             })
 
@@ -108,7 +120,7 @@ export default function sidebar() {
     })
 
 
-    lowerList.append(lowerListTitle, addButton, createDialog, projectsList);
+    lowerList.append(lowerListTitle, addBtnListItem, createDialog, projectsList);
 
     nav.append(upperList, lowerList)
 
