@@ -71,12 +71,23 @@ export default function sidebar() {
         createDialog.classList.toggle('visible');
     })
 
+    projectInput.addEventListener('input', function () {
+        if (this.value) {
+            submitButton.removeAttribute('disabled');
+        } else {
+            submitButton.setAttribute('disabled', true);
+        }
+    })
+
     submitButton.addEventListener('click', () => {
         addProject(projectInput.value);
         createDialog.classList.remove('visible');
         renderProjects();
         projectInput.value = '';
     })
+
+    //Render projects on load
+    renderProjects();
 
     
 
