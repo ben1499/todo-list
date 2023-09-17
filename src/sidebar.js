@@ -14,15 +14,22 @@ export default function sidebar() {
     const addButton = document.createElement('button');
     const createDialog = document.createElement('div');
     const projectInput = document.createElement('input');
+    const errorText = document.createElement('p');
     const submitButton = document.createElement('button');
     const cancelButton = document.createElement('button');  
     const projectsList = document.createElement('ul');
     const addBtnListItem = document.createElement('li');
     const buttonGroup = document.createElement('div');
 
+    errorText.classList.add('error-text');
+    errorText.textContent = 'Project already exists';
+
     buttonGroup.classList.add('btn-group');
 
     inboxListItem.textContent = "Inbox";
+
+    inboxListItem.setAttribute('data-name', 'Inbox');
+    todayListItem.setAttribute('data-name', 'Today');
 
     nav.classList.add('sidebar');
     
@@ -44,7 +51,7 @@ export default function sidebar() {
 
     buttonGroup.append(cancelButton, submitButton);
 
-    createDialog.append(projectInput, buttonGroup);
+    createDialog.append(projectInput, errorText, buttonGroup);
 
     createDialog.classList.add('project-dialog');
 
@@ -68,10 +75,13 @@ export default function sidebar() {
     }
 
     addButton.addEventListener('click', () => {
-        createDialog.classList.toggle('visible');
+        createDialog.classList.add('visible');
+        projectInput.focus();
     })
 
-    projectInput.addEventListener('input', function () {
+    submitButton.setAttribute('disabled', true);
+
+    projectInput.addEventListener('input', function (e) {
         if (this.value) {
             submitButton.removeAttribute('disabled');
         } else {
@@ -79,17 +89,31 @@ export default function sidebar() {
         }
     })
 
-    submitButton.addEventListener('click', () => {
-        addProject(projectInput.value);
-        createDialog.classList.remove('visible');
-        renderProjects();
-        projectInput.value = '';
+    //Submit when click on Enter key
+    projectInput.addEventListener('keypress', function (e) {
+        if (projectInput.value && e.key === 'Enter') {
+            submitButton.click();
+        }
     })
+
+    submitButton.addEventListener('click', () => {
+        const projects = getProjects();
+        if (projects.includes(projectInput.value)) {
+            errorText.classList.add('error-visible');
+        } else {
+            errorText.classList.remove('error-visible');
+            addProject(projectInput.value);
+            createDialog.classList.remove('visible');
+            renderProjects();
+            projectInput.value = '';
+        }
+        
+    })
+
 
     //Render projects on load
     renderProjects();
 
-    
 
     function renderProjects() {
         projectsList.textContent = '';
@@ -100,6 +124,7 @@ export default function sidebar() {
             const listItem = document.createElement('li');
             const deleteButton = document.createElement('button');
             listItem.setAttribute('data-id', index);
+            listItem.setAttribute('data-name', project);
             deleteButton.setAttribute('data-id', index);
             deleteButton.classList.add('delete-btn');
             deleteButton.textContent = 'delete';
@@ -109,13 +134,15 @@ export default function sidebar() {
             deleteButton.addEventListener('click', function(e) {
                 deleteProject(+this.dataset.id);
                 renderProjects();
+                clearDashboard();
+                dashboard();
                 e.stopPropagation();
             })
 
             listItem.addEventListener('click', function(e) {
                 clearDashboard();
                 dashboard(project, true, project);
-
+               
             })
 
 
@@ -127,9 +154,10 @@ export default function sidebar() {
     }
 
     cancelButton.addEventListener('click', () => {
+        projectInput.value = '';
         createDialog.classList.remove('visible');
+        errorText.classList.remove('error-visible');
     })
-
 
     lowerList.append(lowerListTitle, addBtnListItem, createDialog, projectsList);
 

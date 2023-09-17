@@ -8,6 +8,14 @@ body {
     min-height: 100vh;
 }
 
+li {
+    cursor: pointer;
+}
+
+[data-name] {
+    margin-bottom: 5px;
+}
+
 header {
     background-color: black;
     color: white;
@@ -18,11 +26,11 @@ header {
 
 #content {
     display: flex;
-    gap: 20px;
+    gap: 200px;
 }
 
 .sidebar {
-    width: 200px;
+    width: 230px;
     height: 85.8vh;
 }
 
@@ -67,6 +75,14 @@ nav > ul li:hover {
 
 }
 
+.selected-project {
+    background-color: #f87171;
+}
+
+.selected-project:hover {
+    background-color: #ef4444;
+}
+
 .project-dialog {
     display: flex;
     flex-direction: column;
@@ -76,6 +92,17 @@ nav > ul li:hover {
 .project-dialog input {
     padding: 6px 8px;
     border-radius: 4px;
+}
+
+.error-text {
+    font-size: 14px;
+    color: red;
+    margin-left: 3px;
+    display: none;
+}
+
+.error-visible {
+    display: block;
 }
 
 .btn-group {
@@ -95,12 +122,17 @@ nav > ul li:hover {
     color: #fff;
 }
 
+
 .btn-group button:first-child:hover {
     background: #f87171;
 }
 
 .btn-group button:last-child:hover {
     background: #f87171;
+}
+
+.btn-group button:last-child:disabled {
+    background: #fb7185;
 }
 
 .project-dialog button {
@@ -126,8 +158,7 @@ nav > ul li:hover {
 }
 
 .todo-container {
-    margin-top: 50px;
-    margin-left: 30px;
+    margin-top: 60px;
 }
 
 
@@ -204,8 +235,6 @@ nav > ul li:hover {
 }
 
 
-
-
 .visible {
     display: flex;
 }
@@ -243,7 +272,6 @@ nav > ul li:hover {
 ul li {
     list-style-type: none;
 }
-
 
 
 .todo-item {
@@ -359,7 +387,6 @@ input[type="checkbox"] {
   }
   
   input[type="checkbox"]:checked::before {
-    /* Use `visibility` instead of `display` to avoid recalculating layout */
     visibility: visible;
   }
 

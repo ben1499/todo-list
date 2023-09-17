@@ -28,8 +28,11 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true, pa
     const buttonsContainer = document.createElement('div');
     const detailsModal = document.createElement('div');
     const modalCloseButton = document.createElement('button');
+    const todoErrorText = document.createElement('p');
 
 
+    todoErrorText.textContent = 'Task with same same already exists'
+    todoErrorText.classList.add('error-text');
 
     const title = document.createElement('p');
     const desc = document.createElement('p');
@@ -80,7 +83,7 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true, pa
     buttonsContainer.classList.add('action-buttons')
     buttonsContainer.append(cancelButton, submitButton)
     
-    createForm.append(titleInput, descInput, dateInput, priorityContainer, buttonsContainer);
+    createForm.append(titleInput, descInput, dateInput, priorityContainer, todoErrorText, buttonsContainer);
 
     todoListContainer.setAttribute('id', 'todo-list')
     todoListContainer.append(todoList);
@@ -100,13 +103,16 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true, pa
 
 
     addButton.addEventListener('click', () => {
-        // const result = createTodo('Do Something', 'Description of the stuff')
-        // console.log(result);
         createForm.classList.add('form-visible')
+        titleInput.focus();
     })
 
     cancelButton.addEventListener('click', function() {
         createForm.classList.remove('form-visible');
+        titleInput.value = '';
+        descInput.value = '';
+        dateInput.value = '';
+        priorityDropdown.selectedIndex = 0;
     }); 
 
 
@@ -121,10 +127,14 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true, pa
     })
 
     submitButton.addEventListener('click', () => {
+        // const todos = getItems(selectedProject);
+        // const isExist = todos.map(item => item.title).includes(titleInput.value);
+        // if (isExist) {
+        //     todoErrorText.classList.add('error-visible');
+        // } else {
         const result = createTodo(titleInput.value, descInput.value, dateInput.value, selectedProject, priorityDropdown.value);
         titleInput.value = '';
         descInput.value = '';
-        console.log(result);
         addItem(result);
         createForm.classList.remove('form-visible')
         renderTodos();
@@ -139,21 +149,34 @@ export default function dashboard(selectedProject = 'Inbox', isCreate = true, pa
         content.style.pointerEvents = 'all';
     })
 
+    //To highlight selected menu
+    const menuItems = document.querySelectorAll("[data-name]");
+    menuItems.forEach((item) => {
+        item.classList.remove('selected-project');
+        if (selectedProject === 'Inbox' && item.dataset.name === 'Inbox') {
+            item.classList.add('selected-project');
+        } else if (selectedProject === 'none' && item.dataset.name === 'Today') {
+            item.classList.add('selected-project');
+        } else {
+            if (selectedProject === item.dataset.name) {
+                item.classList.add('selected-project');
+            }
+        }
+    })
+
 
     //to display items when dashboard() is called
     renderTodos();
 
     function renderTodos() {
         todoList.textContent = '';
-        console.log("Here" + selectedProject);
         let items;
         if (isCreate) {
             items = getItems(selectedProject);
         } else {
             items = getTodaysItems();
         }
-        console.log("Items");
-        console.log(items);
+
         items.forEach((item, index) => {
             const listItem = document.createElement('li');
             const checkBox = document.createElement('input');

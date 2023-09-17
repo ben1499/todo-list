@@ -3,7 +3,6 @@ import parseISO from 'date-fns/parseISO';
 
 let todoListArray = [];
 
-
 let projects = ['Inbox'];
 let itemID = 0;
 
@@ -18,17 +17,15 @@ const createTodo = (title, description, dueDate, project, priority, isComplete =
         }
 }
 
-
-
 const addItem = (item) => {
     todoListArray.push(item);
-    console.log(todoListArray);
     let existingEntries = JSON.parse(localStorage.getItem('todoListArray'));
 
     existingEntries.push(item);
     item.id = itemID++;
 
     localStorage.setItem('todoListArray', JSON.stringify(existingEntries));
+    localStorage.setItem('itemID', JSON.stringify(itemID));
 }
 
 const deleteTodo = (index) => {
@@ -49,19 +46,17 @@ const getTodaysItems = () => {
 }
 
 const toggleComplete = (index) => {
-    // todoListArray[index].isComplete = !todoListArray[index].isComplete;
-    // console.log(todoListArray);
     todoListArray.forEach((todoItem) => {
         if (todoItem.id === index) {
             todoItem.isComplete  = !todoItem.isComplete;
         }
     })
-    console.log(todoListArray);
+
+    localStorage.setItem('todoListArray', JSON.stringify(todoListArray));
 }
 
 const addProject = (item) => {
     projects.push(item);
-    console.log(projects);
 
     let existingEntries = JSON.parse(localStorage.getItem('projects'));
 
@@ -79,10 +74,6 @@ const deleteProject = (index) => {
     let projectName = projects[index];
     projects.splice(index, 1);
 
-    
-
-    console.log("Project Name");
-    console.log(projectName);
 
     todoListArray = todoListArray.filter((item) => {
         if (item.project !== projectName) {
@@ -106,10 +97,6 @@ const deleteProject = (index) => {
 const getProjects = () => projects;
 
 
-const addLocalStorageTodos = (newItem) => {
-    let existingEntries = JSON.parse(localStorage.getItem('todoListArray'));
-}
-
 const populateLocalStorageTodoData = () => {
     if (localStorage.todoListArray) {
         let existingEntries = JSON.parse(localStorage.getItem('todoListArray'));
@@ -124,7 +111,16 @@ const populateLocalStorageProjectData = () => {
         let existingEntries = JSON.parse(localStorage.getItem('projects'));
         projects = existingEntries;
     } else {
-        localStorage.setItem('projects', JSON.stringify(todoListArray));
+        localStorage.setItem('projects', JSON.stringify(projects));
+    }
+}
+
+const populateItemId = () => {
+    if (localStorage.itemID) {
+        let existingEntry = JSON.parse(localStorage.getItem('itemID'));
+        itemID = existingEntry;
+    } else {
+        localStorage.setItem('itemID', JSON.stringify(itemID));
     }
 }
 
@@ -140,4 +136,5 @@ export {
     deleteProject,
     populateLocalStorageTodoData,
     populateLocalStorageProjectData,
+    populateItemId,
 }
