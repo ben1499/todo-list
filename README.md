@@ -4,7 +4,7 @@
 
 A todolist web application build on JavaScript with Webpack as the builld tool
 
-## Featues
+## Features
 
 - Create todos with priority and additional info
 - Segregate todos based on created Projects
